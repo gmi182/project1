@@ -1,10 +1,41 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 
 class MyTimer extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            count: 1,
+            isPaused: false,
+            buttonTitle: "| |"
+        }
+    }
+
+    componentDidMount() {
+        setInterval(() => this.increment(), 1000);
+    }
+
+    playPauseButton() {
+        this.setState(prevState => ({
+            isPaused: !prevState.isPaused,
+            buttonTitle: prevState.isPaused ? "| |" : "| >",
+        }));
+    }
+
+    increment() {
+        if (this.state.isPaused === false) {
+            this.setState(prevState => ({
+                count: prevState.count + 1,
+            }));
+        }
+    }
+
     render() {
         return (
-            <Text>Hola la que te...</Text>
+            <View>
+                <Text>{this.state.count}</Text>
+                <Button onPress={() => this.playPauseButton()} title={this.state.buttonTitle}></Button>
+            </View>
         )
     }
 }
