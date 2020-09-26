@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
+import {vibrate} from './utils';
 
 const WORK_TITLE = "Work Time";
 const BREAK_TITLE = "Take a Break";
@@ -101,6 +102,7 @@ class MyTimer extends React.Component {
                     title: WORK_TITLE
                 }));
             }
+            vibrate();
         }
         if (this.state.isPaused === false) {
             this.setState(prevState => ({
