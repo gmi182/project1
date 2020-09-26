@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import MyTimer from './Timer.js';
 
 const WORK_BG_COLOR = "green";
@@ -29,11 +29,17 @@ export default class App extends React.Component {
         });
     }
 
+    viewportTap() {
+        Keyboard.dismiss();
+    }
+
     render() {
         return (
-            <View style={[styles.container, {backgroundColor: this.state.backgroundColor}]}>
-                <MyTimer onTypeChange={this.onTimeTypeChange}></MyTimer>
-            </View>
+            <TouchableWithoutFeedback onPress={() => this.viewportTap()}>
+                <View style={[styles.container, {backgroundColor: this.state.backgroundColor}]}>
+                    <MyTimer onTypeChange={this.onTimeTypeChange}></MyTimer>
+                </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

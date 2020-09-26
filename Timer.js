@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
 
 const WORK_TITLE = "Work Time";
 const BREAK_TITLE = "Take a Break";
-const WORK_TIME = 2 * 10;
-const BREAK_TIME = 1 * 10;
+const WORK_TIME = 20 * 60;
+const BREAK_TIME = 10 * 60;
 const BUTTON_PLAY = require("./assets/button-play.png");
 const BUTTON_PAUSE = require("./assets/button-pause.png");
 
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         flexDirection: "row",
+        marginBottom: 20,
     },
     button: {
         marginHorizontal: 10,
@@ -33,9 +34,17 @@ const styles = StyleSheet.create({
     image: {
         width: 50,
         height: 50,
+    },
+    inputContainer: {
+        paddingTop: 10,
+    },
+    textInput: {
+        width: 150,
+        borderColor: "#000000",
+        borderBottomWidth: 1,
+        padding: 5,
     }
 });
-
 
 class MyTimer extends React.Component {
     constructor(props) {
@@ -46,7 +55,9 @@ class MyTimer extends React.Component {
             isPaused: true,
             buttonSource: BUTTON_PLAY,
             isWork: true,
-            title: WORK_TITLE
+            title: WORK_TITLE,
+            workTime: WORK_TIME,
+            breakTime: BREAK_TIME,
         }
     }
 
@@ -67,7 +78,9 @@ class MyTimer extends React.Component {
             isPaused: true,
             buttonSource: BUTTON_PLAY,
             isWork: true,
-            title: WORK_TITLE
+            title: WORK_TITLE,
+            workTime: WORK_TIME,
+            breakTime: BREAK_TIME,
         });
         this.props.onTypeChange(true);
     }
@@ -78,13 +91,13 @@ class MyTimer extends React.Component {
             if (this.state.isWork === true) {
                 this.setState(prevState => ({
                     isWork: !prevState.isWork,
-                    count: BREAK_TIME,
+                    count: prevState.breakTime,
                     title: BREAK_TITLE
                 }));
             } else {
                 this.setState(prevState => ({
                     isWork: !prevState.isWork,
-                    count: WORK_TIME,
+                    count: prevState.workTime,
                     title: WORK_TITLE
                 }));
             }
@@ -93,6 +106,34 @@ class MyTimer extends React.Component {
             this.setState(prevState => ({
                 count: prevState.count - 1
             }));
+        }
+    }
+
+    workTimeChanged = newValue => {
+        let newTimeValue = parseInt(newValue) * 60;
+        if (Number.isInteger(newTimeValue) === false) return;
+
+        this.setState({
+            workTime: newTimeValue,
+        });
+        this._updateCount(true, newTimeValue);
+    };
+
+    breakTimeChanged = newValue => {
+        let newTimeValue = parseInt(newValue) * 60;
+        if (Number.isInteger(newTimeValue) === false) return;
+
+        this.setState({
+            breakTime: newTimeValue,
+        });
+        this._updateCount(false, newTimeValue);
+    };
+
+    _updateCount(isWork, value) {
+        if (this.state.isWork === isWork) {
+            this.setState({
+                count: value,
+            });
         }
     }
 
@@ -108,6 +149,14 @@ class MyTimer extends React.Component {
                     <TouchableOpacity style={styles.button} onPress={() => this.resetButtonPressed()}>
                         <Image source={require("./assets/button-reset.png")} style={styles.image} />
                     </TouchableOpacity>
+                </View>
+                <View style={styles.inputContainer}>
+                    <Text>Work Time (min):</Text>
+                    <TextInput style={styles.textInput} keyboardType="numeric" onChangeText={this.workTimeChanged}>{this.state.workTime / 60}</TextInput>
+                </View>
+                <View style={styles.inputContainer}>
+                    <Text>Break Time (min):</Text>
+                    <TextInput style={styles.textInput} keyboardType="numeric" onChangeText={this.breakTimeChanged}>{this.state.breakTime / 60}</TextInput>
                 </View>
             </View>
         )
