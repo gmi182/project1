@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
 
@@ -7,6 +7,8 @@ const WORK_TITLE = "Work Time";
 const BREAK_TITLE = "Take a Break";
 const WORK_TIME = 2 * 10;
 const BREAK_TIME = 1 * 10;
+const BUTTON_PLAY = require("./assets/button-play.png");
+const BUTTON_PAUSE = require("./assets/button-pause.png");
 
 const styles = StyleSheet.create({
     container: {
@@ -17,10 +19,20 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 40,
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
     timer: {
-        fontSize: 24
+        fontSize: 24,
+    },
+    buttonsContainer: {
+        flexDirection: "row",
+    },
+    button: {
+        marginHorizontal: 10,
+    },
+    image: {
+        width: 50,
+        height: 50,
     }
 });
 
@@ -31,8 +43,8 @@ class MyTimer extends React.Component {
         momentDurationFormatSetup(moment);
         this.state = {
             count: WORK_TIME,
-            isPaused: false,
-            buttonTitle: "| |",
+            isPaused: true,
+            buttonSource: BUTTON_PLAY,
             isWork: true,
             title: WORK_TITLE
         }
@@ -42,11 +54,22 @@ class MyTimer extends React.Component {
         setInterval(() => this.increment(), 1000);
     }
 
-    playPauseButton() {
+    playPauseButtonPressed() {
         this.setState(prevState => ({
             isPaused: !prevState.isPaused,
-            buttonTitle: prevState.isPaused ? "| |" : "| >",
+            buttonSource: prevState.isPaused ? BUTTON_PAUSE : BUTTON_PLAY
         }));
+    }
+
+    resetButtonPressed() {
+        this.setState({
+            count: WORK_TIME,
+            isPaused: true,
+            buttonSource: BUTTON_PLAY,
+            isWork: true,
+            title: WORK_TITLE
+        });
+        this.props.onTypeChange(true);
     }
 
     increment() {
@@ -78,7 +101,14 @@ class MyTimer extends React.Component {
             <View style={styles.container}>
                 <Text style={styles.title}>{this.state.title}</Text>
                 <Text style={styles.timer}>{moment.duration(this.state.count, "second").format("mm:ss")}</Text>
-                <Button onPress={() => this.playPauseButton()} title={this.state.buttonTitle}></Button>
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity style={styles.button} onPress={() => this.playPauseButtonPressed()}>
+                        <Image source={this.state.buttonSource} style={styles.image} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => this.resetButtonPressed()}>
+                        <Image source={require("./assets/button-reset.png")} style={styles.image} />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
